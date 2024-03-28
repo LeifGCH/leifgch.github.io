@@ -3,9 +3,29 @@
 	<head>
 		<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<title>Dungeon of the Island</title>
+		<style>
+			//Rounded style
+			img {
+				border-radius: 25px;
+				border: 3px solid yellow;
+			}
+			#settingsapp:hover {
+				opacity: 0.6;
+			}
+			#settings {
+				background-color: blue;
+				color: white;
+				border-radius: 20px;
+				margin: 50px;
+			}
+			#settings:hover {
+				padding: 8px;
+			}
+		</style>
 	</head>
 	<body>
-		<svg width="1220" height="570" style="border: 5px solid salmon;" id="game">
+		<!--Graphics-->
+		<svg width="1220" height="570" style="border: 5px solid salmon; border-radius: 20px;" id="game">
 			<defs>
 				<filter id="blur" x="0" y="0">
 					<feGaussianBlur in="SourceGraphic" stdDeviation="15" />
@@ -14,32 +34,82 @@
 					<feDropShadow dx="6" dy="6" stdDeviation="1" flood-opacity="0.8"/>
 				</filter>
 				<linearGradient id="linegrad" x1="0%" y1="0%" x2="100%" y2="100%">
-					<stop offset="0%" stop-color="yellow" />
-					<stop offset="100%" stop-color="red" />
+					<stop offset="0%" stop-color="red" />
+					<stop offset="100%" stop-color="yellow" />
+				</linearGradient>
+				<linearGradient id="regiongrad" x1="0%" y1="0%" x2="100%" y2="100%">
+					<stop offset="0%" stop-color="purple" />
+					<stop offset="100%" stop-color="blue" />
 				</linearGradient>
 			</defs>
 			<rect width="200" height="200" x="500" y="100" rx="20" ry="20" fill="none" stroke="blue"/>
 			<text class="title" x="500" y="100" dx="10" dy="20" rotate="20" fill="orange" textLength="180">Dungeon of the Island</text>
-			<text class="title" x="530" y="120" dx="10" dy="20" fill="blue" transform="rotate(40 530,120)" fill="blue" textLength="80" filter="url(#shadow)">Full Game</text>
+			<text class="title" x="530" y="120" dx="10" dy="20" transform="rotate(40 530,120)" fill="blue" textLength="80" filter="url(#shadow)">Full Game</text>
 			<polygon points="570,200 650,240 570,280" style="fill: blue; stroke: green; stroke-width: 2" onclick="removeCover()"/>
 			<text class="title" x="580" y="230" dx="10" dy="20" fill="url(#linegrad)" onclick="removeCover()">Play</text>
+			<rect width="100" height="100" x="1120" y="0" rx="20" ry="20" fill="gray" onclick="settings();" id="settingsapp"/>
 			<image x="0" y="0" width="0" height="0" href=""/>
+			<text x="40" y="40" id="region" fill="url(#regiongrad)"></text>
+			<text x="880" y="40" id="weapon" fill="url(#regiongrad)"></text>
 		</svg>
 		
+		<p id="settings"></p>
+		
 		<script>
-			var name = "";
+			//Variables
 			var game = document.getElementById("game");
 			var fighterImg = "fighter.svg";
 			var mageImg = "mage.svg";
-			var playerImg = "";
 			var x = screen.width / 2;
 			var y = screen.height / 2;
+			var regionText = document.getElementById("region");
+			var weaponText = document.getElementById("weapon");
+			
+			var eX = 0;
+			var eY = 0;
+			var eHealth = 5;
+			
+			var weapon;
+			if(localStorage.weapon != null) {
+				weapon = localStorage.weapon;
+			} else {
+				weapon = "Fists";
+			}
+			var weaponDmg;
+			if(weapon == "Fists") {
+				weaponDmg = 1;
+			}
+			var level;
+			if(localStorage.level != null) {
+				level = Number(localStorage.level);
+			} else {
+				level = 1;
+			}
+			var name;
+			if(localStorage.name != null) {
+				name = localStorage.name;
+			} else {
+				name = "";
+			}
+			var health;
+			if(localStorage.health != null) {
+				health = Number(localStorage.health);
+			} else {
+				health = 50;
+			}
+			var playerImg;
+			if(localStorage.player != null) {
+				playerImg = localStorage.player;
+			} else {
+				var playerImg = "";
+			}
 			var zone;
-			if(getData("zone") != null) {
-				zone = getData("zone");
+			if(localStorage.zone != null) {
+				zone = Number(localStorage.zone);
 			} else {
 				zone = 1;
 			}
+			var region = "";
 			var step = 3;
 			var blockRight = false;
 			var blockLeft = false;
@@ -62,50 +132,61 @@
 				
 				playerChoose();
 			}
+			//Allows you to choose players
 			function playerChoose() {
-				var mageBtn = document.createElement("button");
-				var fighterBtn = document.createElement("button");
-				var wayLabel = document.createElement("h4");
+				if(zone == 1) {
+					var mageBtn = document.createElement("button");
+					var fighterBtn = document.createElement("button");
+					var wayLabel = document.createElement("h4");
 				
-				game.style.border = "none";
+					game.style.border = "none";
+					
+					wayLabel.innerHTML = "<span style='color: red;'>&#8592;</span>Mage or Fighter<span style='color: blue;'>&#8594;</span>";
+					wayLabel.style.position = "absolute";
+					wayLabel.style.left = "40%";
+					wayLabel.style.top = "40%";
+					
+					mageBtn.innerHTML = "<img src='mage.svg' alt='Mage image'/>"
+					mageBtn.style.position = "absolute";
+					mageBtn.style.top = "0px";
+					mageBtn.style.left = "0px";
+					mageBtn.style.width = "30%";
+					mageBtn.style.height = "40%";
+					
+					fighterBtn.innerHTML = "<img src='fighter.svg' alt='Fighter image'/>"
+					fighterBtn.style.position = "absolute";
+					fighterBtn.style.top = "0px";
+					fighterBtn.style.right = "0px";
+					fighterBtn.style.width = "30%";
+					fighterBtn.style.height = "40%";
 				
-				wayLabel.innerHTML = "<span style='color: red;'>&#8592;</span>Mage or Fighter<span style='color: blue;'>&#8594;</span>";
-				wayLabel.style.position = "absolute";
-				wayLabel.style.left = "40%";
-				wayLabel.style.top = "40%";
+					document.body.appendChild(mageBtn);
+					document.body.appendChild(fighterBtn);
+					document.body.appendChild(wayLabel);
 				
-				mageBtn.innerHTML = "<img src='mage.svg' alt='Mage image' width='500px'/>"
-				mageBtn.style.position = "absolute";
-				mageBtn.style.top = "0px";
-				mageBtn.style.left = "0px";
-				
-				fighterBtn.innerHTML = "<img src='fighter.svg' alt='Mage image' width='500px'/>"
-				fighterBtn.style.position = "absolute";
-				fighterBtn.style.top = "0px";
-				fighterBtn.style.right = "0px";
-				
-				document.body.appendChild(mageBtn);
-				document.body.appendChild(fighterBtn);
-				document.body.appendChild(wayLabel);
-				
-				mageBtn.addEventListener("click", function() {
-					playerImg = "mage.svg";
-					name = "mage";
-					document.body.removeChild(mageBtn);
-					document.body.removeChild(fighterBtn);
-					document.body.removeChild(wayLabel);
-					game.style.border = "5px solid red";
+					mageBtn.addEventListener("click", function() {
+						playerImg = "mage.svg";
+						name = "mage";
+						document.body.removeChild(mageBtn);
+						document.body.removeChild(fighterBtn);
+						document.body.removeChild(wayLabel);
+						game.style.border = "5px solid red";
+						health = 50;
+						startGame();
+					});
+					fighterBtn.addEventListener("click", function() {
+						playerImg = "fighter.svg";
+						name = "fighter";
+						document.body.removeChild(fighterBtn);
+						document.body.removeChild(mageBtn);
+						document.body.removeChild(wayLabel);
+						game.style.border = "5px solid blue";
+						health = 40;
+						startGame();
+					});
+				} else {
 					startGame();
-				});
-				fighterBtn.addEventListener("click", function() {
-					playerImg = "fighter.svg";
-					name = "fighter";
-					document.body.removeChild(fighterBtn);
-					document.body.removeChild(mageBtn);
-					document.body.removeChild(wayLabel);
-					game.style.border = "5px solid blue";
-					startGame();
-				});
+				}
 			}
 			function startGame() {
 				var plr = document.getElementsByTagName("image")[0];
@@ -114,14 +195,35 @@
 				plr.setAttribute("width", "125");
 				plr.setAttribute("height", "125");
 				plr.setAttribute("href", playerImg);
+				//Detect key presses
 				window.addEventListener("keydown", function(event) {
 					var key = event.key;
 					var example = rect(50, 50, 150, 150, "red", 2, "hi");
-					collide(example);
+					collide(example, "");
+					
+					var e1 = enemy(eX, eY, eHealth, 4, "red", "fireball", 50, 3, 2);
+					eX = e1.x;
+					eY = e1.y;
+					eHealth = e1.health;
 					
 					localStorage.removeItem("zone");
+					localStorage.removeItem("health");
+					localStorage.removeItem("player");
 					save("zone", zone);
+					save("health", health);
+					save("player", playerImg);
+					save("name", name);
+					save("level", level);
+					save("weapon", weapon);
 					
+					if(health < 1) {
+						faintScreen();
+					}
+					
+					//Key detection
+					if(key == " ") {
+						
+					}
 					if(key == "ArrowUp") {
 						y -= step;
 					}
@@ -136,8 +238,10 @@
 					}
 					if(key == "r") {
 						reset();
+						location.reload();
 					}
 					
+					//Borders of island
 					if(zone == 3 || zone == 6 || zone == 9 || zone == 12) {
 						blockRight = true;
 					} else {
@@ -158,42 +262,71 @@
 					} else {
 						blockBottom = false;
 					}
-					if(x + 62.5 > 1220) {
+					
+					//Regions
+					if(zone == 1 || zone == 2 || zone == 3) {
+						region = "Town";
+					}
+					if(zone == 4 || zone == 7 || zone == 5) {
+						region = "Mountainous Forest";
+					}
+					if(zone == 10) {
+						region = "Dunes of the Desert";
+					}
+					if(zone == 11 || zone == 8) {
+						region = "Acid Range";
+					}
+					if(zone == 12) {
+						region = "Dwarf Town";
+					}
+					if(zone == 9 || zone == 6) {
+						region = "Monster Way";
+					}
+					
+					//Width of player = 125
+					//More border detection
+					if(x + 125 > 1220) {
 						if(blockRight == false) {
 							zone += 1;
 							x = 1;
 						} else {
-							x = 1220 - 62.5;
+							x = 1220 - 125;
 						}
 					}
 					if(x < 0) {
 						if(blockLeft == false) {
 							zone -= 1;
-							x = 1220 - 62.5;
+							x = 1220 - 125;
 						} else {
 							x = 0;
 						}
 					}
-					if(y + 62.5 > 570) {
+					if(y + 125 > 570) {
 						if(blockBottom == false) {
 							zone += 3;
-							y = 1;
+							y = 1 ;
 						} else {
-							y = 570 - 62.5;
+							y = 570 - 125;
 						}
 					}
 					if(y < 0) {
 						if(blockTop == false) {
 							zone -= 3;
-							y = 570 - 62.5;
+							y = 570 - 125;
 						} else {
 							y = 0;
 						}
 					}
+					
 					plr.setAttribute("x", x);
 					plr.setAttribute("y", y);
+					region = region + ", " + name + ", " + health + " health";
+					regionText.innerHTML = region;
+					weaponText.innerHTML = weapon;
 				});
 			}
+			
+			//Functions
 			function rect(rX, rY, width, height, color, zoneTrigger, Class) {
 				var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
 				var elements = document.getElementsByClassName(Class);
@@ -201,7 +334,8 @@
 					shapeX: rX,
 					shapeY: rY,
 					shapeWidth: width,
-					shapeHeight: height
+					shapeHeight: height,
+					zone: zoneTrigger
 				};
 				if(zone == zoneTrigger) {
 					rect.setAttribute("x", rX);
@@ -218,61 +352,117 @@
 					}
 				}
 				if(elements.length > 1) {
-					game.removeChild(elements[1]);
+					game.removeChild(elements[0]);
 				}
 				
 				return objRect;
 			}
-			function collide(shape) {
-			
-				const playerWidth = 125;
-				const playerHeight = 125;
+			//Collision
+			function collide(shape, type, dmg = 0) {
+				if(zone == shape.zone) {
+					const playerWidth = 125;
+					const playerHeight = 125;
 
-				const playerLeft = x;
-				const playerRight = x + playerWidth;
-				const playerTop = y;
-				const playerBottom = y + playerHeight;
+					const playerLeft = x;
+					const playerRight = x + playerWidth;
+					const playerTop = y;
+					const playerBottom = y + playerHeight;
 
-				const shapeLeft = shape.shapeX;
-				const shapeRight = shape.shapeX + shape.shapeWidth;
-				const shapeTop = shape.shapeY;
-				const shapeBottom = shape.shapeY + shape.shapeHeight;
+					const shapeLeft = shape.shapeX;
+					const shapeRight = shape.shapeX + shape.shapeWidth;
+					const shapeTop = shape.shapeY;
+					const shapeBottom = shape.shapeY + shape.shapeHeight;
+					
+					if(playerRight > shapeLeft && playerLeft < shapeRight && playerBottom > shapeTop && playerTop < shapeBottom) {
+						const overlapLeft = playerRight - shapeLeft;
+						const overlapRight = shapeRight - playerLeft;
+						const overlapTop = playerBottom - shapeTop;
+						const overlapBottom = shapeBottom - playerTop;
 
-    			if(playerRight > shapeLeft && playerLeft < shapeRight && playerBottom > shapeTop && playerTop < shapeBottom) {
-					const overlapLeft = playerRight - shapeLeft;
-					const overlapRight = shapeRight - playerLeft;
-					const overlapTop = playerBottom - shapeTop;
-					const overlapBottom = shapeBottom - playerTop;
-
-					const minOverlapX = Math.min(overlapLeft, overlapRight);
-					const minOverlapY = Math.min(overlapTop, overlapBottom);
+						const minOverlapX = Math.min(overlapLeft, overlapRight);
+						const minOverlapY = Math.min(overlapTop, overlapBottom);
         			
-					if(minOverlapX < minOverlapY) {
-            			if(overlapLeft < overlapRight) {
-                			x -= overlapLeft;
+						if(minOverlapX < minOverlapY) {
+							if(overlapLeft < overlapRight) {
+								x -= overlapLeft;
+							} else {
+								x += overlapRight;
+							}
 						} else {
-                			x += overlapRight;
+							if(overlapTop < overlapBottom) {
+								y -= overlapTop;
+							} else {
+								y += overlapBottom;
+							}
 						}
+						if(type == "enemy") {
+							health -= dmg;
+						}
+						shape.isColliding = true;
 					} else {
-            			if(overlapTop < overlapBottom) {
-                			y -= overlapTop;
-						} else {
-							y += overlapBottom;
-						}
+						shape.isColliding = false;
 					}
 				}
 			}
+			function faintScreen() {
+				alert("You have fainted...");
+				if(confirm("Restarting...\nPress cancel for more details")) {
+					reset();
+					location.reload();
+				} else {
+					alert("Tip:\n-Next time try to practice more before going on an adventure.");
+					reset();
+					location.reload();
+				}
+			}
+			function enemy(stdX, stdY, hp, zoneTrigger, color, Class, r, dmg, speed, levelsOnKill = 0.5) {
+				var monster1 = rect(stdX, stdY, r, r, color, zoneTrigger, Class);
+				collide(monster1, "enemy", dmg);
+				
+				if(stdX < x) {
+					stdX += speed;
+				}
+				if(stdX > x) {
+					stdX -= speed;
+				}
+				if(stdY < y) {
+					stdY += speed;
+				}
+				if(stdY > y) {
+					stdY -= speed;
+				}
+				if(hp < 1) {
+					var all = document.getElementsByClassName(Class);
+					for(var i = 0; i < all.length; i ++) {
+						all[i].remove();
+					}
+				}
+				
+				if(monster1.isColliding == true) {
+					return {x: stdX, y: stdY, health: hp - weaponDmg};
+				} else {
+					return {x: stdX, y: stdY, health: hp};
+				}
+			}
 			function rand(min, max) {
+				//Random algorithm
 				return Math.floor(Math.random() * (max - min + 1) ) + min;
 			}
+			//Save progress
 			function save(key, data) {
 				localStorage.setItem(key, data);
 			}
-			function getData(key) {
-				return localStorage.getItem(key);
-			}
 			function reset() {
 				localStorage.clear();
+			}
+			//Setting tips features
+			function settings() {
+				var form = document.getElementById("settings");
+				
+				form.innerHTML = "Tips and tricks:<br/>If you press the right and down, left and up, etc. arrows, they all count as one key press<br/>Click to exit";
+				form.addEventListener("click", function() {
+					form.innerHTML = "";
+				});
 			}
 		</script>
 	</body>
