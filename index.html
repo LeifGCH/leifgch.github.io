@@ -1,53 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<title>LeifGCH Projects</title>
-		<style>
-			h4:hover, p:hover, h1:hover, a:hover {
-				color: red !important;
-			}
-			.group {
-				background-color: blue;
-				border: 4px solid orange;
-				border-radius: 20px;
-				padding: 5px;
-			}
-			.group a {
-				color: white;
-				font-family: arial;
-			}
-			.group p {
-				color: yellow;
-			}
-			.group img {
-				width: 150px;
-			}
-			.stick {
-				font-family: arial;
-				top: 0px;
-				position: sticky;
-				background-color: green;
-				border: 4px solid red;
-				border-radius: 40px;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="stick">
-			<h1 style="color: red;">LeifGCH Projects</h1>
-			<p style="color: blue;">All of my projects in one website</p>
-		</div>
-		
-		<div class="group">
-			<p>Progress:</p><progress value="20" max="100">20%</progress>
-			<p>Dungeon of the Island<br/>Version: 0.4</p>
-			<a href="./game.html">Game</a>
-			<img src="./mage.svg"/>
-		</div>
-		
-		<script>
-			
-		</script>
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <title>Game Download</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+    </style>
+</head>
+<body>
+    <h1>Enter Your Code to Download the Game</h1>
+    <form id="code-form">
+        <input type="text" id="code" placeholder="Enter your unique code" required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="message"></div>
+    <script>
+        const validCodes = ["CODE123", "CODE456"]; // Replace with your unique codes
+
+        // Check if a code is used or expired
+        function isCodeUsedOrExpired(code) {
+            const codeData = JSON.parse(localStorage.getItem(code));
+            if (!codeData) return false;
+            
+            const now = new Date();
+            const expiry = new Date(codeData.expiry);
+            return codeData.used || now > expiry;
+        }
+
+        // Mark a code as used and set expiry
+        function markCodeAsUsed(code) {
+            const expiry = new Date();
+            expiry.setMinutes(expiry.getMinutes() + 10); // Code expires in 10 minutes
+            localStorage.setItem(code, JSON.stringify({ used: true, expiry }));
+        }
+
+        document.getElementById('code-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const userInput = document.getElementById('code').value;
+            const messageDiv = document.getElementById('message');
+
+            if (validCodes.includes(userInput) && !isCodeUsedOrExpired(userInput)) {
+                markCodeAsUsed(userInput);
+                messageDiv.innerHTML = '<a href="yourgame.zip" download>Download Your Game Here</a>';
+                alert('Code has been used and is now invalid.');
+            } else {
+                messageDiv.textContent = 'Invalid, already used, or expired code.';
+            }
+        });
+    </script>
+</body>
 </html>
