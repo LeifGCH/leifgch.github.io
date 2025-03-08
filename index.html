@@ -2,51 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Game Download</title>
+    <title>Fishing Industry</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            color: blue;
+        }
+        h4 {
+            color: orange;
+        }
     </style>
 </head>
 <body>
-    <h1>Enter Your Code to Download the Game</h1>
-    <form id="code-form">
-        <input type="text" id="code" placeholder="Enter your unique code" required>
-        <button type="submit">Submit</button>
-    </form>
-    <div id="message"></div>
+    <h1>-Fishing Industry-</h1>
+    <h4>Fish, sell, rest, repeat</h4>
+    <h4>Coming Soon!</h4>
+    
     <script>
-        const validCodes = ["CODE123", "CODE456"]; // Replace with your unique codes
-
-        // Check if a code is used or expired
-        function isCodeUsedOrExpired(code) {
-            const codeData = JSON.parse(localStorage.getItem(code));
-            if (!codeData) return false;
-            
-            const now = new Date();
-            const expiry = new Date(codeData.expiry);
-            return codeData.used || now > expiry;
-        }
-
-        // Mark a code as used and set expiry
-        function markCodeAsUsed(code) {
-            const expiry = new Date();
-            expiry.setMinutes(expiry.getMinutes() + 10); // Code expires in 10 minutes
-            localStorage.setItem(code, JSON.stringify({ used: true, expiry }));
-        }
-
-        document.getElementById('code-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const userInput = document.getElementById('code').value;
-            const messageDiv = document.getElementById('message');
-
-            if (validCodes.includes(userInput) && !isCodeUsedOrExpired(userInput)) {
-                markCodeAsUsed(userInput);
-                messageDiv.innerHTML = '<a href="yourgame.zip" download>Download Your Game Here</a>';
-                alert('Code has been used and is now invalid.');
-            } else {
-                messageDiv.textContent = 'Invalid, already used, or expired code.';
-            }
-        });
+        
     </script>
 </body>
 </html>
