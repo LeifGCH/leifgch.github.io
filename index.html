@@ -26,6 +26,21 @@
             color: white;
             font-size: 20px;
         }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+
     </style>
 </head>
 <body>
@@ -33,7 +48,21 @@
         <h1>Fishing Industry</h1>
         <h4>Fish, sell, rest, repeat</h4>
         <h4>Use the guide <a href="/features.html">here</a></h4>
-        <h4>Coming Soon!</h4>
+        <h3>Enter Code to Download</h3>
+        <input type="text" id="secret-code" placeholder="Enter code here">
+        <button onclick="checkCode()">Submit</button>
     </div>
+    <script>
+        function checkCode() {
+            let code = document.getElementById("secret-code").value;
+            if(code === "50$202%") {
+                alert("Some computer security softwares warn against downloading or running this. If tey do, click on more info and select run anyway.")
+                window.location.href = "https://github.com/LeifGCH/leifgch.github.io/releases/tag/fishing/Fishing.Industry.zip";
+            } else {
+                alert("Incorrect code!");
+            }
+        }
+    </script>
+
 </body>
 </html>
