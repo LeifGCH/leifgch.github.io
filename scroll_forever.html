@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LeifGCH - Scroll Forever</title>
+    <style>
+      :root {
+        --bg: 255;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+        background: rgb(var(--bg), var(--bg), var(--bg));
+        color: #000;
+        transition: background 0.05s linear;
+      }
+
+      .top-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .top-button {
+		font-family: inherit;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        background: transparent;
+        padding: 0.25rem 0.75rem;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+
+      .content {
+        padding: 6rem 1.5rem 4rem;
+        max-width: 40rem;
+        margin: 0 auto;
+        line-height: 1.6;
+        position: relative;
+        height: 100%;
+      }
+
+      #world {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        will-change: transform;
+        padding-top: 6rem;
+      }
+
+      #heroText {
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      #subText {
+        font-size: 0.95rem;
+        opacity: 0.7;
+        max-width: 28rem;
+      }
+
+      .milestone {
+        position: absolute;
+        opacity: 0;
+        transition: opacity 0.3s linear;
+        padding: 1rem 0;
+        max-width: 30rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="top-bar">
+      <div class="top-title" id="topTitle">Scroll Forever</div>
+      <div id="depthMeter">0 ft</div>
+      <button class="top-button" id="toTopBtn">Back to top</button>
+    </header>
+
+    <main class="content">
+      <div id="world">
+        <div id="heroText">Scroll Forever (within reason, of course).</div>
+        <p id="subText">The farther you scroll, the darker the screen becomes. Disclaimer: some random text may appear as you do so.<br><strong>(c) 2026 LeifGCH</strong></p>
+        <div id="milestones"></div>
+      </div>
+    </main>
+
+    <script>
+      const PX_PER_INCH = 8;
+      const INCHES_PER_FOOT = 12;
+      const FEET_PER_MILE = 5280;
+
+      const WORLD_FEET = 40229;
+
+      const root = document.documentElement;
+      const depthMeter = document.getElementById("depthMeter");
+      const toTopBtn = document.getElementById("toTopBtn");
+      const milestoneContainer = document.getElementById("milestones");
+      const world = document.getElementById("world");
+
+      let virtualFeet = 0;
+
+      const milestones = [
+        {depthFeet: 13123, text: "Deepest humans have ever stood underground: Mponeng Gold Mine (13,123 ft)"},
+        {depthFeet: 35853, text: "Deepest humans have ever gone underwater: Challenger Deep (35,853 ft)"},
+        {depthFeet: 40230, text: "Deepest hole ever drilled: Kola Superdeep Borehole (40,230 ft)"} //TODO - add more milestones
+      ];
+
+      const scale = INCHES_PER_FOOT * PX_PER_INCH;
+
+      milestones.forEach(m => {
+        const el = document.createElement("div");
+        el.className = "milestone";
+        el.textContent = m.text;
+        el.style.top = (m.depthFeet * scale) + "px";
+		el.style.opacity = 1;
+		if(m.depthFeet > WORLD_FEET / 2) {
+			el.style.color = "#FFF"; //white - light gray bg: black text
+		} else {
+			el.style.color = "#000"; //dark gray - black bg: white text
+		}
+        milestoneContainer.appendChild(el);
+        m.el = el;
+      });
+	  
+      function updateWorld() {
+        const virtualPx = virtualFeet * scale;
+        world.style.transform = `translateY(${-virtualPx}px)`;
+
+        const progress = virtualFeet / WORLD_FEET;
+        const gray = Math.round(255 * (1 - progress));
+        root.style.setProperty("--bg", gray); //bg darkness
+
+        if(virtualFeet < 1) {
+          depthMeter.textContent = (virtualFeet * 12).toFixed(1) + " in"; //inches
+        } else if(virtualFeet < FEET_PER_MILE) {
+          depthMeter.textContent = virtualFeet.toFixed(2) + " ft"; //feet
+        } else {
+          depthMeter.textContent = (virtualFeet / FEET_PER_MILE).toFixed(3) + " mi"; //miles
+        }
+      }
+
+      function onWheel(e) {
+        const deltaFeet = (e.deltaY / PX_PER_INCH) / INCHES_PER_FOOT;
+        virtualFeet += deltaFeet * 2; //double scroll speed
+        virtualFeet = Math.max(0, Math.min(WORLD_FEET, virtualFeet));
+        updateWorld();
+      }
+
+      window.addEventListener("wheel", onWheel);
+
+      toTopBtn.addEventListener("click", () => {
+        virtualFeet = 0;
+        updateWorld();
+      });
+
+      updateWorld();
+    </script>
+  </body>
+</html>
