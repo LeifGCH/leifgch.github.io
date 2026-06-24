@@ -1,103 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>leifgch.github.io</title>
-	<link rel="icon" type="image/png" href="img/favicon.png" sizes="32x32">
-    <style>
-      :root {
-        --bg: 255;
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <title>leifgch.github.io</title>
+        <link rel="icon" type="image/png" href="img/favicon.png" sizes="32x32">
+        <style>
+            :root {
+                --bg: 255;
+            }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-      html, body {
-        height: 100%;
-        background: rgb(var(--bg), var(--bg), var(--bg));
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-        color: #000;
-      }
+            html, body {
+                height: 100%;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+                color: #000;
+            }
 
-      .top-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 10;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(8px);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      }
+            body {
+                margin: 0;
+                padding: 0;
+                background-image: url("img/flag.png");
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+                image-rendering: pixelated;
+            }
 
-      .top-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-      }
+            .top-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 10;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                background: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(8px);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            }
 
-      .content {
-        padding: 6rem 1.5rem 4rem;
-        max-width: 50rem;
-        margin: 0 auto;
-      }
+            .top-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+            }
 
-      .project {
-        border: 1px solid rgba(0,0,0,0.15);
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin-bottom: 1.5rem;
-        background: rgba(255,255,255,0.6);
-        backdrop-filter: blur(6px);
-      }
+            .content {
+                padding: 6rem 1.5rem 4rem;
+                max-width: 50rem;
+                margin: 0 auto;
+            }
 
-      .project-title {
-        font-size: 1.4rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
+            .project {
+                border: 1px solid rgba(0,0,0,0.15);
+                padding: 1.5rem;
+                border-radius: 12px;
+                margin-bottom: 1.5rem;
+                background: rgba(255,255,255,0.6);
+                backdrop-filter: blur(6px);
+            }
 
-      .project-desc {
-        font-size: 0.95rem;
-        opacity: 0.8;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-      }
+            .project-title {
+                font-size: 1.4rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+            }
 
-      .play-btn {
-        font-family: inherit;
-        border: 1px solid rgba(0,0,0,0.25);
-        background: transparent;
-        padding: 0.4rem 1rem;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: background 0.15s;
-      }
+            .project-desc {
+                font-size: 0.95rem;
+                opacity: 0.8;
+                margin-bottom: 1rem;
+                line-height: 1.5;
+            }
 
-      .play-btn:hover {
-        background: rgba(0,0,0,0.1);
-      }
-    </style>
-  </head>
+            .play-btn {
+                font-family: inherit;
+                border: 1px solid rgba(0,0,0,0.25);
+                background: transparent;
+                padding: 0.4rem 1rem;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                transition: background 0.15s;
+            }
 
-  <body>
-    <header class="top-bar">
-      <div class="top-title">leifgch.github.io</div>
-    </header>
+            .play-btn:hover {
+                background: rgba(0,0,0,0.1);
+            }
+        </style>
+    </head>
 
-    <main class="content">
-      <div class="project">
-        <div class="project-title">Scroll Forever</div>
-        <div class="project-desc">My first project in my new website. Just keep scrolling down, and you'll see some milestones to track your progress. Work in progress...</div>
-        <button class="play-btn" onclick="location.href='scroll_forever.html'">Play Now</button>
-      </div>
-    </main>
-  </body>
+    <body>
+        <header class="top-bar">
+            <div class="top-title">leifgch.github.io</div>
+        </header>
+
+        <main class="content">
+            <div class="project">
+                <div class="project-title">Scroll Forever</div>
+                <div class="project-desc">My first project in my new website. Just keep scrolling down, and you'll see some milestones to track your progress. Work in progress...</div>
+                <button class="play-btn" onclick="location.href='scroll_forever.html'">Play Now</button>
+            </div>
+        </main>
+    </body>
 </html>
