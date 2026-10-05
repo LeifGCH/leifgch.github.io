@@ -4,5 +4,5 @@
 ### [Play now](https://leifgch.github.io/scroll_forever.html)
 ## LeifGCH·AI
 ### Chat with Gemma AI directly in your browser (locally)!
-### [Chat now](https://leifgch.github.io/scroll_forever.html)
+### [Chat now](https://leifgch.github.io/ai.html)
 ## And there's one more thing... but that's for you to find (HINT: it's an example *sketchy site*. You can tell I was bored.)
