@@ -1,0 +1,1593 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>leifgch·ai</title>
+
+        <link rel="icon" type="image/png" href="img/favicon.png" sizes="32x32" />
+
+        <style>
+            :root {
+                --bg: 255;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                height: 100%;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+                color: #000;
+            }
+
+            body {
+                background-image: url("img/flag.png");
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-attachment: fixed;
+
+                image-rendering: pixelated;
+
+                overflow: hidden;
+            }
+
+            button,
+            textarea {
+                font-family: inherit;
+            }
+
+            button {
+                color: #000;
+            }
+
+            .top-bar {
+                position: fixed;
+
+                top: 0;
+                left: 0;
+                right: 0;
+
+                z-index: 20;
+
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                padding: 0.75rem 1rem;
+
+                background: rgba(255, 255, 255, 0.8);
+
+                backdrop-filter: blur(8px);
+
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            .top-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+            }
+
+            .back-btn {
+                color: #000;
+                text-decoration: none;
+
+                font-size: 0.9rem;
+
+                opacity: 0.7;
+            }
+
+            .back-btn:hover {
+                opacity: 1;
+            }
+
+            .app {
+                position: fixed;
+
+                top: 4.2rem;
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+
+                max-width: 78rem;
+
+                margin: 0 auto;
+
+                display: grid;
+
+                grid-template-columns: 15rem 1fr;
+
+                border: 1px solid rgba(0, 0, 0, 0.15);
+
+                border-radius: 14px;
+
+                overflow: hidden;
+
+                background: rgba(255, 255, 255, 0.55);
+
+                backdrop-filter: blur(10px);
+            }
+
+            .sidebar {
+                display: flex;
+                flex-direction: column;
+
+                min-width: 0;
+
+                border-right: 1px solid rgba(0, 0, 0, 0.12);
+
+                background: rgba(255, 255, 255, 0.35);
+            }
+
+            .sidebar-header {
+                padding: 1rem;
+
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            }
+
+            .new-chat {
+                width: 100%;
+
+                padding: 0.55rem 0.75rem;
+
+                font-size: 0.85rem;
+
+                border: 1px solid rgba(0, 0, 0, 0.2);
+
+                border-radius: 9px;
+
+                background: rgba(255, 255, 255, 0.35);
+
+                cursor: pointer;
+            }
+
+            .new-chat:hover {
+                background: rgba(0, 0, 0, 0.08);
+            }
+
+            .chat-list {
+                flex: 1;
+
+                overflow-y: auto;
+
+                padding: 0.5rem;
+            }
+
+            .chat-row {
+                display: flex;
+                align-items: center;
+
+                width: 100%;
+
+                margin-bottom: 0.25rem;
+
+                border-radius: 8px;
+            }
+
+            .chat-row:hover {
+                background: rgba(0, 0, 0, 0.06);
+            }
+
+            .chat-row.active {
+                background: rgba(255, 255, 255, 0.55);
+
+                border: 1px solid rgba(0, 0, 0, 0.12);
+            }
+
+            .chat-item {
+                flex: 1;
+                min-width: 0;
+
+                padding: 0.65rem 0.7rem;
+
+                border: 0;
+
+                background: transparent;
+
+                text-align: left;
+
+                font-size: 0.8rem;
+
+                cursor: pointer;
+
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .chat-model {
+                display: block;
+
+                margin-top: 0.15rem;
+
+                font-size: 0.65rem;
+
+                opacity: 0.45;
+
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .delete-chat {
+                width: 2rem;
+                height: 2rem;
+
+                margin-right: 0.2rem;
+
+                border: 0;
+                border-radius: 6px;
+
+                background: transparent;
+
+                font-size: 0.8rem;
+
+                cursor: pointer;
+
+                opacity: 0.35;
+            }
+
+            .chat-row:hover .delete-chat,
+            .chat-row.active .delete-chat {
+                opacity: 0.7;
+            }
+
+            .delete-chat:hover {
+                opacity: 1 !important;
+
+                background: rgba(0, 0, 0, 0.08);
+            }
+
+            .chat {
+                display: flex;
+                flex-direction: column;
+
+                min-width: 0;
+                min-height: 0;
+            }
+
+            .chat-header {
+                display: flex;
+
+                align-items: center;
+                justify-content: space-between;
+
+                gap: 1rem;
+
+                padding: 1rem 1.25rem;
+
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            }
+
+            .chat-title {
+                min-width: 0;
+
+                font-size: 0.95rem;
+
+                font-weight: 600;
+
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .model-status {
+                flex-shrink: 0;
+
+                font-size: 0.7rem;
+
+                opacity: 0.55;
+
+                text-align: right;
+            }
+
+            .messages {
+                flex: 1;
+
+                min-height: 0;
+
+                overflow-y: auto;
+
+                padding: 1.5rem;
+            }
+
+            .welcome {
+                height: 100%;
+
+                display: flex;
+                flex-direction: column;
+
+                justify-content: center;
+                align-items: center;
+
+                text-align: center;
+
+                padding: 2rem;
+
+                opacity: 0.65;
+            }
+
+            .welcome-title {
+                font-size: 1.3rem;
+
+                font-weight: 600;
+
+                margin-bottom: 0.5rem;
+            }
+
+            .welcome-text {
+                max-width: 34rem;
+
+                font-size: 0.8rem;
+
+                line-height: 1.6;
+            }
+
+            .message {
+                display: flex;
+
+                margin-bottom: 1rem;
+            }
+
+            .message.user {
+                justify-content: flex-end;
+            }
+
+            .message-content {
+                max-width: min(75%, 42rem);
+
+                padding: 0.75rem 0.9rem;
+
+                border: 1px solid rgba(0, 0, 0, 0.12);
+
+                border-radius: 11px;
+
+                background: rgba(255, 255, 255, 0.5);
+
+                font-size: 0.85rem;
+
+                line-height: 1.55;
+
+                white-space: pre-wrap;
+
+                overflow-wrap: anywhere;
+            }
+
+            .message.user .message-content {
+                background: rgba(0, 0, 0, 0.07);
+            }
+
+            .message.ai .message-content {
+                background: rgba(255, 255, 255, 0.65);
+            }
+
+            .composer {
+                padding: 0.85rem;
+
+                border-top: 1px solid rgba(0, 0, 0, 0.08);
+            }
+
+            .composer-inner {
+                display: flex;
+
+                align-items: flex-end;
+
+                gap: 0.5rem;
+
+                padding: 0.5rem;
+
+                border: 1px solid rgba(0, 0, 0, 0.18);
+
+                border-radius: 11px;
+
+                background: rgba(255, 255, 255, 0.45);
+            }
+
+            .input {
+                flex: 1;
+
+                min-height: 2.2rem;
+                max-height: 10rem;
+
+                padding: 0.35rem 0.4rem;
+
+                border: 0;
+
+                outline: 0;
+
+                resize: none;
+
+                background: transparent;
+
+                color: #000;
+
+                font-size: 0.85rem;
+
+                line-height: 1.4;
+            }
+
+            .input::placeholder {
+                color: #000;
+
+                opacity: 0.45;
+            }
+
+            .send {
+                width: 2.2rem;
+                height: 2.2rem;
+
+                flex-shrink: 0;
+
+                border: 1px solid rgba(0, 0, 0, 0.2);
+
+                border-radius: 8px;
+
+                background: rgba(255, 255, 255, 0.5);
+
+                cursor: pointer;
+
+                font-size: 1rem;
+            }
+
+            .send:hover {
+                background: rgba(0, 0, 0, 0.08);
+            }
+
+            .send.stop {
+                font-size: 0.7rem;
+            }
+
+            .send:disabled {
+                opacity: 0.4;
+
+                cursor: default;
+            }
+
+            .model-screen {
+                position: fixed;
+
+                inset: 0;
+
+                z-index: 50;
+
+                display: flex;
+
+                align-items: center;
+                justify-content: center;
+
+                padding: 1rem;
+
+                background: rgba(255, 255, 255, 0.38);
+
+                backdrop-filter: blur(14px);
+
+                overflow-y: auto;
+            }
+
+            .model-screen.hidden {
+                display: none;
+            }
+
+            .model-box {
+                width: min(52rem, 100%);
+
+                padding: 1.5rem;
+
+                border: 1px solid rgba(0, 0, 0, 0.15);
+
+                border-radius: 14px;
+
+                background: rgba(255, 255, 255, 0.75);
+            }
+
+            .model-heading {
+                font-size: 1.25rem;
+
+                font-weight: 600;
+
+                margin-bottom: 0.35rem;
+            }
+
+            .model-subheading {
+                font-size: 0.78rem;
+
+                line-height: 1.5;
+
+                opacity: 0.6;
+
+                margin-bottom: 1.25rem;
+            }
+
+            .model-list {
+                display: flex;
+                flex-direction: column;
+
+                gap: 0.5rem;
+
+                max-height: 55vh;
+
+                overflow-y: auto;
+            }
+
+            .model-option {
+                position: relative;
+
+                display: grid;
+
+                grid-template-columns: auto 1fr auto;
+
+                align-items: center;
+
+                gap: 0.85rem;
+
+                padding: 0.9rem;
+
+                border: 1px solid rgba(0, 0, 0, 0.13);
+
+                border-radius: 10px;
+
+                background: rgba(255, 255, 255, 0.3);
+
+                cursor: pointer;
+
+                transition:
+                    background 0.12s,
+                    border-color 0.12s;
+            }
+
+            .model-option:hover {
+                background: rgba(0, 0, 0, 0.045);
+            }
+
+            .model-option.selected {
+                border-color: rgba(0, 0, 0, 0.4);
+
+                background: rgba(255, 255, 255, 0.7);
+            }
+
+            .model-radio {
+                width: 1rem;
+                height: 1rem;
+            }
+
+            .model-name {
+                font-size: 0.85rem;
+
+                font-weight: 600;
+            }
+
+            .model-description {
+                margin-top: 0.2rem;
+
+                font-size: 0.7rem;
+
+                line-height: 1.4;
+
+                opacity: 0.55;
+            }
+
+            .model-size {
+                font-size: 0.72rem;
+
+                opacity: 0.6;
+
+                white-space: nowrap;
+            }
+
+            .model-footer {
+                display: flex;
+
+                justify-content: space-between;
+
+                align-items: center;
+
+                gap: 1rem;
+
+                margin-top: 1.25rem;
+            }
+
+            .hardware-note {
+                font-size: 0.7rem;
+
+                line-height: 1.4;
+
+                opacity: 0.5;
+            }
+
+            .load-model {
+                flex-shrink: 0;
+
+                padding: 0.55rem 1rem;
+
+                border: 1px solid rgba(0, 0, 0, 0.25);
+
+                border-radius: 9px;
+
+                background: transparent;
+
+                cursor: pointer;
+
+                font-size: 0.8rem;
+            }
+
+            .load-model:hover {
+                background: rgba(0, 0, 0, 0.08);
+            }
+
+            .load-model:disabled {
+                opacity: 0.4;
+
+                cursor: default;
+            }
+
+            .loading {
+                position: fixed;
+
+                inset: 0;
+
+                z-index: 100;
+
+                display: flex;
+
+                justify-content: center;
+                align-items: center;
+
+                padding: 1.5rem;
+
+                background: rgba(255, 255, 255, 0.35);
+
+                backdrop-filter: blur(12px);
+            }
+
+            .loading.hidden {
+                display: none;
+            }
+
+            .loading-box {
+                width: min(30rem, 100%);
+
+                padding: 1.5rem;
+
+                border: 1px solid rgba(0, 0, 0, 0.15);
+
+                border-radius: 12px;
+
+                background: rgba(255, 255, 255, 0.75);
+
+                text-align: center;
+            }
+
+            .loading-title {
+                font-size: 1rem;
+
+                font-weight: 600;
+
+                margin-bottom: 0.6rem;
+            }
+
+            .loading-status {
+                font-size: 0.75rem;
+
+                line-height: 1.5;
+
+                opacity: 0.65;
+
+                margin-bottom: 1rem;
+            }
+
+            .progress {
+                height: 5px;
+
+                overflow: hidden;
+
+                border-radius: 99px;
+
+                background: rgba(0, 0, 0, 0.1);
+            }
+
+            .progress-bar {
+                width: 0%;
+
+                height: 100%;
+
+                border-radius: inherit;
+
+                background: #000;
+
+                transition: width 0.15s;
+            }
+
+            .error {
+                color: #900;
+            }
+
+            @media (max-width: 650px) {
+                body {
+                    overflow: auto;
+                }
+
+                .app {
+                    top: 4rem;
+
+                    left: 0.5rem;
+                    right: 0.5rem;
+                    bottom: 0.5rem;
+
+                    grid-template-columns: 1fr;
+                }
+
+                .sidebar {
+                    display: none;
+                }
+
+                .messages {
+                    padding: 1rem;
+                }
+
+                .message-content {
+                    max-width: 90%;
+                }
+
+                .model-option {
+                    grid-template-columns: auto 1fr;
+                }
+
+                .model-size {
+                    grid-column: 2;
+                }
+
+                .model-footer {
+                    align-items: flex-end;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="top-bar">
+            <div class="top-title">leifgch.github.io</div>
+
+            <a class="back-btn" href="index.html"> ← Back </a>
+        </header>
+
+        <!-- model select -->
+
+        <div class="model-screen" id="modelScreen">
+            <div class="model-box">
+                <div class="model-heading">Choose a local AI</div>
+
+                <div class="model-subheading">
+                    These models run directly in your browser. Nothing is sent to an AI server. The first load downloads
+                    the selected model and your browser may cache it for later use.
+                </div>
+
+                <div class="model-list" id="modelList"></div>
+
+                <div class="model-footer">
+                    <div class="hardware-note">
+                        WebGPU will be used when available. Otherwise the model runs on CPU/WASM.
+                    </div>
+
+                    <button class="load-model" id="loadModel" disabled>Load Model</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- model loading -->
+
+        <div class="loading hidden" id="loading">
+            <div class="loading-box">
+                <div class="loading-title" id="loadingTitle">Loading local AI</div>
+
+                <div class="loading-status" id="loadingStatus">Preparing model...</div>
+
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <main class="app">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <button class="new-chat" id="newChat">+ New Chat</button>
+                </div>
+
+                <div class="chat-list" id="chatList"></div>
+            </aside>
+
+            <section class="chat">
+                <header class="chat-header">
+                    <div class="chat-title" id="chatTitle">New Chat</div>
+
+                    <div class="model-status" id="modelStatus">No model loaded</div>
+                </header>
+
+                <div class="messages" id="messages"></div>
+
+                <form class="composer" id="composer">
+                    <div class="composer-inner">
+                        <textarea class="input" id="input" placeholder="Ask anything..." rows="1" disabled></textarea>
+
+                        <button class="send" id="send" type="submit" disabled>↑</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <script type="module">
+			//uses transformers.js
+            import { pipeline, TextStreamer } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0";
+
+            const MODELS = [
+                {
+                    id: "onnx-community/gemma-3-270m-it-ONNX",
+
+                    name: "Gemma 3 270M Instruct",
+
+                    parameters: "270M",
+
+                    size: "273 MB",
+
+                    dtype: "q4f16",
+
+                    description: "Gemma 3 with only 270M params",
+
+                    promptFormat: "messages",
+                },
+
+                {
+                    id: "onnx-community/gemma-3-1b-it-ONNX",
+
+                    name: "Gemma 3 1B IT",
+
+                    parameters: "1B",
+
+                    size: "763 MB",
+
+                    dtype: "q4f16",
+
+                    description: "Basically a smarter version of Gemma 3 270M params. Has 1B params though, so might take a little while to load.",
+
+                    promptFormat: "messages",
+                },
+            ];
+
+            //storage
+
+            const STORAGE_KEY = "leifgch-ai-chats";
+
+            //dom
+
+            const modelScreen = document.getElementById("modelScreen");
+
+            const modelList = document.getElementById("modelList");
+
+            const loadModelButton = document.getElementById("loadModel");
+
+            const loading = document.getElementById("loading");
+
+            const loadingTitle = document.getElementById("loadingTitle");
+
+            const loadingStatus = document.getElementById("loadingStatus");
+
+            const progressBar = document.getElementById("progressBar");
+
+            const modelStatus = document.getElementById("modelStatus");
+
+            const chatList = document.getElementById("chatList");
+
+            const chatTitle = document.getElementById("chatTitle");
+
+            const messages = document.getElementById("messages");
+
+            const composer = document.getElementById("composer");
+
+            const input = document.getElementById("input");
+
+            const send = document.getElementById("send");
+
+            const newChatButton = document.getElementById("newChat");
+
+            //state
+
+            let chats = [];
+
+            let activeChatId = null;
+
+            let selectedModelId = null;
+
+            let currentModel = null;
+
+            let generator = null;
+
+            let generating = false;
+
+            let generationController = null;
+
+            try {
+                const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+                if(Array.isArray(stored)) {
+                    chats = stored;
+                }
+            } catch {
+                chats = [];
+            }
+			
+            function saveChats() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
+            }
+
+            function findModel(id) {
+                return MODELS.find((model) => model.id === id);
+            }
+
+            function renderModelList() {
+                modelList.innerHTML = "";
+
+                for(const model of MODELS) {
+                    const option = document.createElement("label");
+
+                    option.className = "model-option";
+
+                    option.dataset.modelId = model.id;
+
+                    const radio = document.createElement("input");
+
+                    radio.type = "radio";
+
+                    radio.name = "model";
+
+                    radio.className = "model-radio";
+
+                    radio.value = model.id;
+
+                    const info = document.createElement("div");
+
+                    const name = document.createElement("div");
+
+                    name.className = "model-name";
+
+                    name.textContent = `${model.name} · ${model.parameters}`;
+
+                    const description = document.createElement("div");
+
+                    description.className = "model-description";
+
+                    description.textContent = model.description;
+
+                    info.appendChild(name);
+
+                    info.appendChild(description);
+
+                    const size = document.createElement("div");
+
+                    size.className = "model-size";
+
+                    size.textContent = model.size;
+
+                    option.appendChild(radio);
+
+                    option.appendChild(info);
+
+                    option.appendChild(size);
+
+                    radio.addEventListener("change", () => {
+                        selectedModelId = model.id;
+
+                        document.querySelectorAll(".model-option").forEach((element) => {
+                            element.classList.toggle(
+                                "selected",
+
+                                element.dataset.modelId === selectedModelId
+                            );
+                        });
+
+                        loadModelButton.disabled = false;
+                    });
+
+                    modelList.appendChild(option);
+                }
+            }
+
+            function updateProgress(data) {
+                if(typeof data?.progress === "number") {
+                    const value = Math.max(0, Math.min(100, data.progress));
+
+                    progressBar.style.width = `${value}%`;
+                }
+
+                if(data?.status) {
+                    let status = data.status;
+
+                    if(data.file) {
+                        status = `${status}: ${data.file}`;
+                    }
+
+                    loadingStatus.textContent = status;
+                }
+            }
+
+            function createChat(modelId) {
+                const model = findModel(modelId || currentModel?.id);
+
+                const chat = {
+                    id: crypto.randomUUID(),
+
+                    title: "New Chat",
+
+                    model: model?.id || null,
+
+                    messages: [],
+                };
+
+                chats.unshift(chat);
+
+                activeChatId = chat.id;
+
+                saveChats();
+
+                renderChatList();
+
+                renderChat();
+
+                return chat;
+            }
+
+            function deleteChat(id) {
+                const index = chats.findIndex((chat) => chat.id === id);
+
+                if(index === -1) {
+                    return;
+                }
+
+                const wasActive = chats[index].id === activeChatId;
+
+                chats.splice(index, 1);
+
+                if(wasActive) {
+                    activeChatId = chats.length ? chats[0].id : null;
+                }
+
+                saveChats();
+
+                renderChatList();
+
+                renderChat();
+
+                if(chats.length === 0) {
+                    createChat(currentModel?.id);
+                }
+            }
+
+            function renderChatList() {
+                chatList.innerHTML = "";
+
+                for(const chat of chats) {
+                    const row = document.createElement("div");
+
+                    row.className = "chat-row";
+
+                    if(chat.id === activeChatId) {
+                        row.classList.add("active");
+                    }
+
+                    const button = document.createElement("button");
+
+                    button.className = "chat-item";
+
+                    const title = document.createElement("div");
+
+                    title.textContent = chat.title || "New Chat";
+
+                    const model = findModel(chat.model);
+
+                    const modelLabel = document.createElement("span");
+
+                    modelLabel.className = "chat-model";
+
+                    modelLabel.textContent = model ? model.name : "Unknown model";
+
+                    button.appendChild(title);
+
+                    button.appendChild(modelLabel);
+
+                    button.addEventListener("click", () => {
+                        if(generating) {
+                            return;
+                        }
+
+                        activeChatId = chat.id;
+
+                        renderChatList();
+
+                        renderChat();
+                    });
+
+                    const deleteButton = document.createElement("button");
+
+                    deleteButton.className = "delete-chat";
+
+                    deleteButton.textContent = "×";
+
+                    deleteButton.title = "Delete chat";
+
+                    deleteButton.addEventListener("click", (event) => {
+                        event.stopPropagation();
+
+                        if(!generating) {
+                            deleteChat(chat.id);
+                        }
+                    });
+
+                    row.appendChild(button);
+
+                    row.appendChild(deleteButton);
+
+                    chatList.appendChild(row);
+                }
+            }
+
+            function createWelcome() {
+                const welcome = document.createElement("div");
+
+                welcome.className = "welcome";
+
+                const title = document.createElement("div");
+
+                title.className = "welcome-title";
+
+                title.textContent = currentModel ? currentModel.name : "Local AI";
+
+                const text = document.createElement("div");
+
+                text.className = "welcome-text";
+
+                text.textContent = currentModel
+                    ? "Start a conversation. This model runs directly in your browser."
+                    : "Choose a model to get started.";
+
+                welcome.appendChild(title);
+
+                welcome.appendChild(text);
+
+                return welcome;
+            }
+
+            function addMessageToUI(role, content) {
+                const wrapper = document.createElement("div");
+
+                wrapper.className = `message ${role}`;
+
+                const contentElement = document.createElement("div");
+
+                contentElement.className = "message-content";
+
+                contentElement.textContent = content;
+
+                wrapper.appendChild(contentElement);
+
+                messages.appendChild(wrapper);
+
+                return contentElement;
+            }
+
+            function renderChat() {
+                messages.innerHTML = "";
+
+                const chat = getActiveChat();
+
+                if(!chat) {
+                    chatTitle.textContent = "New Chat";
+
+                    modelStatus.textContent = currentModel ? currentModel.name : "No model loaded";
+
+                    messages.appendChild(createWelcome());
+
+                    return;
+                }
+
+                chatTitle.textContent = chat.title || "New Chat";
+
+                const model = findModel(chat.model);
+
+                modelStatus.textContent = model
+                    ? `${model.name} · ${navigator.gpu ? "WebGPU" : "CPU"}`
+                    : "Unknown model";
+
+                if(chat.messages.length === 0) {
+                    messages.appendChild(createWelcome());
+
+                    return;
+                }
+
+                for(const message of chat.messages) {
+                    addMessageToUI(message.role, message.content);
+                }
+
+                scrollToBottom();
+            }
+
+            function getActiveChat() {
+                return chats.find((chat) => chat.id === activeChatId);
+            }
+
+            //scroll
+
+            function scrollToBottom() {
+                messages.scrollTop = messages.scrollHeight;
+            }
+			
+            function buildGenerationInput(conversation) {
+                return conversation;
+            }
+
+            function extractGeneratedText(output) {
+                if(!output || !Array.isArray(output) || !output[0]) {
+                    return "";
+                }
+
+                const generated = output[0].generated_text;
+
+                if(Array.isArray(generated)) {
+                    const last = generated[generated.length - 1];
+
+                    if(last && typeof last.content === "string") {
+                        return last.content;
+                    }
+                }
+
+                if(typeof generated === "string") {
+                    return generated;
+                }
+
+                return "";
+            }
+
+            //load
+
+            async function loadSelectedModel() {
+                const model = findModel(selectedModelId);
+
+                if(!model) {
+                    return;
+                }
+
+                loadModelButton.disabled = true;
+
+                modelScreen.classList.add("hidden");
+
+                loading.classList.remove("hidden");
+
+                loadingTitle.textContent = `Loading ${model.name}`;
+
+                loadingStatus.textContent = "Preparing model...";
+
+                progressBar.style.width = "0%";
+
+                try {
+                    if(generator && typeof generator.dispose === "function") {
+                        await generator.dispose();
+                    }
+
+                    generator = null;
+
+                    const options = {
+                        dtype: model.dtype,
+
+                        progress_callback: updateProgress,
+                    };
+					
+					//use webgpu wen available
+
+                    if(navigator.gpu) {
+                        options.device = "webgpu";
+                    }
+
+                    currentModel = model;
+
+                    generator = await pipeline("text-generation", model.id, options);
+
+                    modelStatus.textContent = `${model.name} · ${navigator.gpu ? "WebGPU" : "CPU"}`;
+
+                    loadingStatus.textContent = "Model ready.";
+
+                    progressBar.style.width = "100%";
+					
+                    if(chats.length === 0) {
+                        createChat(model.id);
+                    }
+
+                    if(!activeChatId || !chats.some((chat) => chat.id === activeChatId)) {
+                        activeChatId = chats[0].id;
+                    }
+
+                    const activeChat = getActiveChat();
+
+                    if(activeChat && !activeChat.model) {
+                        activeChat.model = model.id;
+                    }
+
+                    saveChats();
+
+                    renderChatList();
+
+                    renderChat();
+
+                    await new Promise((resolve) => setTimeout(resolve, 300));
+
+                    loading.classList.add("hidden");
+
+                    input.disabled = false;
+
+                    send.disabled = false;
+
+                    input.focus();
+                } catch (error) {
+                    console.error("Model loading error:", error);
+
+                    loadingStatus.innerHTML = `<span class="error">
+                Failed to load this model.<br><br>
+                ${escapeHTML(error?.message || String(error))}
+            </span>`;
+
+                    modelStatus.textContent = "Model failed to load";
+
+                    setTimeout(() => {
+                        loading.classList.add("hidden");
+
+                        modelScreen.classList.remove("hidden");
+
+                        loadModelButton.disabled = false;
+                    }, 2500);
+                }
+            }
+
+            async function generateResponse() {
+                const chat = getActiveChat();
+
+                if(!chat || !generator || !currentModel) {
+                    return;
+                }
+
+                if(chat.model && chat.model !== currentModel.id) {
+                    const oldModel = findModel(chat.model);
+
+                    addMessageToUI(
+                        "ai",
+                        `This chat belongs to ${
+                            oldModel ? oldModel.name : "another model"
+                        }. Start a new chat with the current model.`
+                    );
+
+                    return;
+                }
+
+                generating = true;
+
+                generationController = new AbortController();
+
+                send.textContent = "■";
+
+                send.classList.add("stop");
+
+                input.disabled = true;
+
+                const aiContent = addMessageToUI("ai", "");
+
+                const conversation = [
+                    {
+                        role: "system",
+
+                        content: "You are an AI assistant that can help the user with a wide variety of tasks.",
+                    },
+
+                    ...chat.messages.map((message) => ({
+                        role: message.role === "ai" ? "assistant" : "user",
+
+                        content: message.content,
+                    })),
+                ];
+
+                let generatedText = "";
+
+                try {
+                    const generationInput = buildGenerationInput(conversation);
+
+                    const streamer = new TextStreamer(generator.tokenizer, {
+                        skip_prompt: true,
+
+                        skip_special_tokens: true,
+
+                        callback_function: (text) => {
+                            generatedText += text;
+
+                            aiContent.textContent = generatedText;
+
+                            scrollToBottom();
+                        },
+                    });
+
+                    const output = await generator(generationInput, {
+                        max_new_tokens: 4096,
+
+                        do_sample: false,
+
+                        streamer,
+
+                        signal: generationController.signal,
+                    });
+
+                    if(!generatedText.trim()) {
+                        generatedText = extractGeneratedText(output);
+
+                        aiContent.textContent = generatedText;
+                    }
+
+                    if(generatedText.trim()) {
+                        chat.messages.push({
+                            role: "ai",
+
+                            content: generatedText.trim(),
+                        });
+                    }
+
+                    saveChats();
+                } catch (error) {
+                    if(error?.name === "AbortError") {
+                        const partial = generatedText.trim();
+
+                        if(partial) {
+                            aiContent.textContent = partial;
+
+                            chat.messages.push({
+                                role: "ai",
+
+                                content: partial,
+                            });
+
+                            saveChats();
+                        }
+                    } else {
+                        console.error("Generation error:", error);
+
+                        aiContent.textContent = "Generation error: " + (error?.message || String(error));
+                    }
+                } finally {
+                    generationController = null;
+
+                    generating = false;
+
+                    send.textContent = "↑";
+
+                    send.classList.remove("stop");
+
+                    input.disabled = false;
+
+                    renderChatList();
+
+                    input.focus();
+
+                    scrollToBottom();
+                }
+            }
+
+            //stop
+
+            function stopGeneration() {
+                if(!generating || !generationController) {
+                    return;
+                }
+
+                generationController.abort();
+            }
+
+            //send
+
+            composer.addEventListener("submit", async (event) => {
+                event.preventDefault()
+
+                if(generating) {
+                    stopGeneration();
+
+                    return;
+                }
+
+                const text = input.value.trim();
+
+                if(!text || !generator || !currentModel) {
+                    return;
+                }
+
+                let chat = getActiveChat();
+
+                if(!chat) {
+                    chat = createChat(currentModel.id);
+                }
+
+                if(!chat.model) {
+                    chat.model = currentModel.id;
+                }
+
+                if(chat.model !== currentModel.id) {
+                    addMessageToUI("ai", "This chat uses a different model (the other one). Please start a new chat.");
+
+                    return;
+                }
+
+                chat.messages.push({
+                    role: "user",
+
+                    content: text,
+                });
+
+                if(chat.title === "New Chat") {
+                    chat.title = text.length > 42 ? text.slice(0, 42) + "..." : text;
+                }
+
+                input.value = "";
+
+                saveChats();
+
+                renderChatList();
+
+                renderChat();
+
+                await generateResponse();
+            });
+
+            newChatButton.addEventListener("click", () => {
+                if(generating) {
+                    return;
+                }
+
+                createChat(currentModel?.id);
+
+                input.focus();
+            });
+
+            //send/stop
+
+            send.addEventListener("click", (event) => {
+                if(generating) {
+                    event.preventDefault();
+
+                    stopGeneration();
+                }
+            });
+
+            input.addEventListener("keydown", (event) => {
+                if(event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+
+                    composer.requestSubmit();
+                }
+            });
+
+            loadModelButton.addEventListener("click", () => {
+                loadSelectedModel();
+            });
+
+            function escapeHTML(text) {
+                return String(text)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            renderModelList();
+
+            modelScreen.classList.remove("hidden");
+        </script>
+    </body>
+</html>
