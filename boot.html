@@ -1,0 +1,23 @@
+<!DOCTYPE html><html><body><script>
+let w = open("about:blank","_blank");
+
+if(!sessionStorage.r){
+  sessionStorage.r=1;
+
+  fetch("f.txt").then(r=>r.text()).then(t=>{
+    w.document.open();
+    w.document.write(t);
+    w.document.close();
+
+    w.document.querySelectorAll("script").forEach(s=>{
+      let ns = w.document.createElement("script");
+      if(s.src) ns.src = s.src;
+      else ns.textContent = s.textContent;
+      s.replaceWith(ns);
+    });
+  });
+
+  document.body.innerHTML="";
+  document.title="";
+}
+</script></body></html>

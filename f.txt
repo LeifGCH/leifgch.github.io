@@ -2,38 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Home - Classroom</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #111;
-      color: #eee;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-  </style>
-</head>
-<body>
-
-<script>
-//btw, if you couldn't tell by the name, this a a *sketchy site* example
-//simulates some *sketchy site* behavior
-if(!sessionStorage.getItem("ranOnce")) {
-  sessionStorage.setItem("ranOnce", "true");
-
-  const helper = window.open("about:blank", "_blank");
-
-  if(helper) {
-    helper.document.open();
-    helper.document.write(`
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -100,17 +68,6 @@ if(!sessionStorage.getItem("ranOnce")) {
 
       setInterval(moveTarget, 1200);
     };
-  <\/script>
-</body>
-</html>
-    `);
-    helper.document.close();
-  }
-
-  document.body.innerHTML = "";
-  document.title = "";
-}
-</script>
-
+  </script>
 </body>
 </html>
