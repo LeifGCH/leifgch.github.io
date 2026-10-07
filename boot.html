@@ -2,22 +2,24 @@
 let w = open("about:blank","_blank");
 
 if(!sessionStorage.r){
-  sessionStorage.r=1;
+  sessionStorage.r = 1;
 
-  fetch("f.txt").then(r=>r.text()).then(t=>{
-    w.document.open();
-    w.document.write(t);
-    w.document.close();
+  w.document.open();
+  w.document.write(`
+    <!DOCTYPE html>
+    <html><body>
+      <script>
+        fetch("f.txt").then(r=>r.text()).then(t=>{
+          document.open();
+          document.write(t);
+          document.close();
+        });
+      <\/script>
+    </body></html>
+  `);
+  w.document.close();
 
-    w.document.querySelectorAll("script").forEach(s=>{
-      let ns = w.document.createElement("script");
-      if(s.src) ns.src = s.src;
-      else ns.textContent = s.textContent;
-      s.replaceWith(ns);
-    });
-  });
-
-  document.body.innerHTML="";
-  document.title="";
+  document.body.innerHTML = "";
+  document.title = "";
 }
 </script></body></html>
