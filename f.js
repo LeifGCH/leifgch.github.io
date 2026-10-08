@@ -1,0 +1,74 @@
+// Build the entire page instantly
+document.open();
+document.write(`
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #111;
+    color: #eee;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+  }
+  #game {
+    margin-top: 2rem;
+    width: 400px;
+    height: 300px;
+    border: 2px solid #444;
+    position: relative;
+    background: #000;
+    overflow: hidden;
+  }
+  #target {
+    width: 40px;
+    height: 40px;
+    background: #4caf50;
+    position: absolute;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(76,175,80,0.8);
+  }
+  #score {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+  }
+</style>
+</head>
+<body>
+  <h1>yo, this is a test. if this works, this site is really *sketchy*</h1>
+  <div id="game"><div id="target"></div></div>
+  <div id="score">Score: <span id="scoreValue">0</span></div>
+</body>
+</html>
+`);
+document.close();
+
+// Now run the game logic
+window.onload = () => {
+  const game = document.getElementById('game');
+  const target = document.getElementById('target');
+  const scoreSpan = document.getElementById('scoreValue');
+  let score = 0;
+
+  function moveTarget() {
+    const maxX = game.clientWidth - target.clientWidth;
+    const maxY = game.clientHeight - target.clientHeight;
+    const x = Math.floor(Math.random() * maxX);
+    const y = Math.floor(Math.random() * maxY);
+    target.style.left = x + 'px';
+    target.style.top = y + 'px';
+  }
+
+  target.addEventListener('click', () => {
+    score++;
+    scoreSpan.textContent = score;
+    moveTarget();
+  });
+
+  setInterval(moveTarget, 1200);
+};
