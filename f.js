@@ -59,7 +59,7 @@ document.write(`
       aria-label="Website address"
       required
     >
-    <button type="submit">Open 10 Tabs</button>
+    <button type="submit">Open 40 Tabs</button>
   </form>
 
   <div id="status" role="status">
@@ -105,7 +105,7 @@ document.write(`
 
       let opened = 0;
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 40; i++) {
         const tab = window.open(target, "_blank");
 
         if (tab) {
@@ -113,12 +113,12 @@ document.write(`
         }
       }
 
-      if (opened === 10) {
-        status.textContent = "Opened 10 tabs for " + target;
+      if (opened === 40) {
+        status.textContent = "Opened 40 tabs for " + target;
       } else {
         status.textContent =
           "Opened " + opened +
-          " of 10 tabs. Your browser may have blocked some pop-ups.";
+          " of 40 tabs. Your browser may have blocked some pop-ups.";
       }
     });
   </script>
