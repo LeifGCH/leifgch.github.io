@@ -4,121 +4,142 @@ document.write(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Forceload</title>
+  <title> </title>
   <style>
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
-      font-family: system-ui, sans-serif;
-      color: #222;
-      background: #fff;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+      background: white;
+      color: black;
     }
 
-    #bar {
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-      display: flex;
-      gap: 8px;
+    #login {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+      background: white;
     }
 
-    #url {
-      flex: 1;
-      min-width: 0;
-      padding: 10px;
-      border: 1px solid #bbb;
-      border-radius: 6px;
-      font-size: 14px;
+    input, button {
+      width: 100%;
+      padding: 12px;
+      font: inherit;
+    }
+
+    input {
+      border: 1px solid #aaa;
+      border-radius: 5px;
     }
 
     button {
-      padding: 9px 14px;
-      border: 1px solid #bbb;
-      border-radius: 6px;
-      background: #f7f7f7;
+      border: 1px solid #111;
+      border-radius: 5px;
+      background: #111;
+      color: white;
       cursor: pointer;
     }
 
-    #status {
-      padding: 8px 10px;
-      color: #555;
-      font-size: 12px;
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #message {
+      max-width: 300px;
+      min-height: 1.2em;
+      font-size: 14px;
+      overflow-wrap: anywhere;
     }
   </style>
 </head>
 <body>
-  <form id="bar">
+  <form id="login">
     <input
-      id="url"
-      type="text"
-      placeholder="Enter a website, e.g. wikipedia.org"
-      autocomplete="url"
-      spellcheck="false"
-      aria-label="Website address"
+      id="password"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+      maxlength="1024"
       required
     >
-    <button type="submit">Open 40 Tabs</button>
+    <button id="submit" type="submit">Enter</button>
+    <p id="message" role="status" aria-live="polite"></p>
   </form>
 
-  <div id="status" role="status">
-    Enter a website to get started.
-  </div>
-
   <script>
-    const form = document.getElementById("bar");
-    const input = document.getElementById("url");
-    const status = document.getElementById("status");
+    const WORKER_URL =
+      "https://pp.proxyproxy.workers.dev";
 
-    function normalizeURL(value) {
-      value = value.trim();
+    const form = document.getElementById("login");
+    const field = document.getElementById("password");
+    const button = document.getElementById("submit");
+    const message = document.getElementById("message");
 
-      if (!value) {
-        throw new Error("Enter a website address.");
-      }
-
-      const url = new URL(
-        /^[a-zA-Z][a-zA-Z\\d+.-]*:/.test(value)
-          ? value
-          : "https://" + value
-      );
-
-      if (!["http:", "https:"].includes(url.protocol)) {
-        throw new Error("Only HTTP and HTTPS websites are supported.");
-      }
-
-      return url.href;
-    }
-
-    form.addEventListener("submit", function(event) {
+    form.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      let target;
+      if (button.disabled) return;
+
+      button.disabled = true;
+      field.disabled = true;
+      message.textContent = "Checking password...";
 
       try {
-        target = normalizeURL(input.value);
-      } catch (error) {
-        status.textContent = error.message;
-        return;
-      }
+        const response = await fetch(WORKER_URL + "/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            password: field.value
+          })
+        });
 
-      let opened = 0;
+        const result = await response.text();
 
-      for (let i = 0; i < 40; i++) {
-        const tab = window.open(target, "_blank");
+        if (!response.ok) {
+          message.textContent = result;
+          field.value = "";
 
-        if (tab) {
-          opened++;
+          // Keep the form disabled while locked out.
+          if (response.status === 429) {
+            button.disabled = true;
+            field.disabled = true;
+            return;
+          }
+
+          return;
         }
-      }
 
-      if (opened === 40) {
-        status.textContent = "Opened 40 tabs for " + target;
-      } else {
-        status.textContent =
-          "Opened " + opened +
-          " of 40 tabs. Your browser may have blocked some pop-ups.";
+        // Replace the login page with the HTML returned by the Worker.
+        document.open();
+        document.write(result);
+        document.close();
+
+      } catch {
+        message.textContent =
+          "Unable to connect. Check your connection and try again.";
+      } finally {
+        // If navigation did not replace the page, allow another attempt.
+        if (document.getElementById("login")) {
+          const isLocked = message.textContent.startsWith(
+            "Too many incorrect attempts."
+          ) || message.textContent.startsWith("Locked out.");
+
+          if (!isLocked) {
+            button.disabled = false;
+            field.disabled = false;
+          }
+        }
       }
     });
   </script>
